@@ -1,0 +1,62 @@
+version: "3"
+
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    networks:
+      - network
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgresuser
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=postgresdb
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/etc/mm/postgresql/data
+    networks:
+      - network
+
+  api:
+    container_name: api
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgresdb
+      - SPRING_DATASOURCE_USERNAME=postgresuser
+      - SPRING_DATASOURCE_PASSWORD=secret
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    networks:
+      - network
+
+  nginx:
+    container_name: nginx
+    image: nginx:1.13
+    restart: always
+    depends_on:
+      - api
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/conf.prod:/etc/nginx/conf.d/nginx.conf
+      - web-root:/var/www/html
+    networks:
+      - network
+
+volumes:
+  postgres-data:
+  web-root:
+
+networks:
+  network:
+    driver: bridge
