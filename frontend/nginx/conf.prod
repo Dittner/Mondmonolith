@@ -1,7 +1,7 @@
 server {
 
   listen 3000;
-  server_name mondmonolith.de;
+  server_name 159.89.10.146;
 
   location / {
     root   /usr/share/nginx/html;

@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres-local
+    environment:
+      - POSTGRES_USER=postgresuser
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=postgresdb
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/etc/mm/postgresql/data
+
+  api:
+    container_name: api
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgresdb
+      - SPRING_DATASOURCE_USERNAME=postgresuser
+      - SPRING_DATASOURCE_PASSWORD=secret
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+volumes:
+  postgres-data:
