@@ -7,7 +7,7 @@ Designed by developers for developers. This is a web-solution, that enables you 
 
 [Mondmonolith Server Module](https://github.com/Dittner/MondmonolithApi)
 
-[https://mondmonolith.de](https://mondmonolith.vercel.app/)
+[https://mondmonolith.de](https://mondmonolith.de)
 
 
 TechStack: HTML/CSS, JS/TS, React, MobX, Java, Spring Boot, RestAPI, Docker

@@ -1,7 +1,24 @@
 server {
-  listen 80;
+  listen 443 ssl;
 
-  server_name 159.89.10.146;
+  server_name mondmonolith.de;
+
+  ssl                         on;
+  ssl_protocols               TLSv1.2 TLSv1.1 TLSv1;
+  ssl_session_cache           shared:SSL:20m;
+  ssl_session_timeout         10m;
+  ssl_ciphers                 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
+  ssl_prefer_server_ciphers   on;
+
+  resolver                    8.8.8.8 8.8.4.4 valid=300s;
+  resolver_timeout            10s;
+  add_header                  X-Frame-Options             "DENY";
+  add_header                  X-Content-Type-Options      "nosniff";
+  add_header                  Strict-Transport-Security   "max-age=31536000";
+
+  ssl_stapling                on;
+  ssl_certificate             /etc/nginx/ssl/ssl-bundle.crt;
+  ssl_certificate_key         /etc/nginx/ssl/mondmonolith.de.key;
 
   location /api {
     proxy_pass http://api:8080;
