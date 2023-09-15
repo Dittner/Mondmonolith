@@ -11,7 +11,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - postgres-data:/etc/mm/postgresql/data
+      - ./pgdata:/var/lib/postgresql/data
 
   api:
     container_name: api
@@ -29,6 +29,3 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgresuser
       - SPRING_DATASOURCE_PASSWORD=secret
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-
-volumes:
-  postgres-data:

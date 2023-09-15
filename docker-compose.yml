@@ -1,8 +1,9 @@
-version: "3"
+version: '3'
 
 services:
   frontend:
     container_name: frontend
+    restart: always
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -11,19 +12,23 @@ services:
 
   postgres:
     image: postgres:15-alpine
+    container_name: postgres-db
+    restart: always
+    command: ["postgres", "-c", "log_statement=all"]
     environment:
-      - POSTGRES_USER=postgresuser
-      - POSTGRES_PASSWORD=secret
-      - POSTGRES_DB=postgresdb
-    ports:
-      - 5432:5432
+      - POSTGRES_USER=postgres
+      - PGUSER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+      - PGDATABASE=postgres
     volumes:
-      - postgres-data:/etc/mm/postgresql/data
+      - ./pgdata:/var/lib/postgresql/data
     networks:
       - network
 
   api:
     container_name: api
+    restart: always
     build:
       context: ./api
       dockerfile: Dockerfile
@@ -32,15 +37,16 @@ services:
     links:
       - postgres
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgresdb
-      - SPRING_DATASOURCE_USERNAME=postgresuser
-      - SPRING_DATASOURCE_PASSWORD=secret
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=none
     networks:
       - network
 
   nginx:
     container_name: nginx
+    restart: always
     image: nginx:1.13
     depends_on:
       - api
@@ -54,7 +60,6 @@ services:
       - network
 
 volumes:
-  postgres-data:
   web-root:
 
 networks:
